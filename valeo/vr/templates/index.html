@@ -1,0 +1,24 @@
+{% load static %}
+<head>
+	<!-- <script src="/build/vrview.min.js"></script> -->
+	<script src="{% static "vr/build/vrview.min.js" %}"></script>
+	<!-- <script src="https://s3.amazonaws.com/testes-ideape/google+vr/build/vrview.min.js"></script> -->
+</head>
+
+<body>
+	<strong>Hello World!</strong>
+	<!-- <img src="{% static "vr/carro.jpg" %}"> -->
+	<div id="vrview" style="min-height: 1000px;"></div>
+</body>
+
+<script type="text/javascript">
+	window.addEventListener('load', onVrViewLoad)
+	function onVrViewLoad() {
+	  var vrView = new VRView.Player('#vrview', {
+	    video: '{% static "vr/congo_2048.mp4" %}',
+	    // video: "https://s3.amazonaws.com/testes-ideape/congo_2048.mp4",
+	    is_stereo: true
+	  });
+	}
+</script>
+
