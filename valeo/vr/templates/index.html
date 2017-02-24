@@ -2,23 +2,34 @@
 <head>
 	<!-- <script src="/build/vrview.min.js"></script> -->
 	<script src="{% static "vr/build/vrview.min.js" %}"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 	<!-- <script src="https://s3.amazonaws.com/testes-ideape/google+vr/build/vrview.min.js"></script> -->
 </head>
 
 <body>
-	<strong>Hello World!</strong>
+	<strong id="change">Hello World!</strong>
 	<!-- <img src="{% static "vr/carro.jpg" %}"> -->
 	<div id="vrview" style="min-height: 1000px;"></div>
 </body>
 
 <script type="text/javascript">
+	var vrView;
 	window.addEventListener('load', onVrViewLoad)
 	function onVrViewLoad() {
-	  var vrView = new VRView.Player('#vrview', {
-	    video: '{% static "vr/congo_2048.mp4" %}',
-	    // video: "https://s3.amazonaws.com/testes-ideape/congo_2048.mp4",
+	  vrView = new VRView.Player('#vrview', {
+	    // video: '{% static "vr/congo_2048.mp4" %}',
+	    video: '{% static "vr/trail.mp4" %}',
 	    is_stereo: true
 	  });
 	}
+
+$( "#change" ).click(function() {
+	vrView.setContent({
+	  video: '{% static "vr/congo_2048.mp4" %}',
+	  is_stereo: true
+	});
+});
+
+
 </script>
 
