@@ -8,7 +8,17 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <link rel="stylesheet" href="style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 	</head>
+
+  <style type="text/css">
+    .steering-wheel{
+        width: 40%;
+        position: absolute;
+        left: 30%;
+        top: 65%;
+    }
+  </style>
 
 	<body>
     <div id="error" class="dialog">
@@ -17,6 +27,8 @@
         <p class="message">An unknown error occurred.</p>
       </div>
     </div>
+
+    <img class="steering-wheel" id="wheel" src='build/wheel_v1.svg'>
 
     <div id="play-overlay">
       <img src="images/ic_play_arrow_white_24dp.svg"/>
@@ -35,5 +47,26 @@ WebVRConfig = {
 
     <script src="build/three.js"></script>
     <script src="build/embed.js"></script>
+    <script type="text/javascript">
+
+      function check_joystick() {
+          $.ajax({
+          url: 'http://127.0.0.1:8000/vr/async-joystick/',
+          type: 'get',
+          success: function(data) {
+              // console.log(data);
+              $("#wheel").css('transform', 'rotate(' + data + 'deg)');
+          },
+          failure: function(data) {
+              console.log('Got an error dude');
+          }
+        });
+      }
+
+       // Time in milliseconds
+      setInterval(check_joystick, 100);
+      $("#wheel").appendTo(".webvr-polyfill-fullscreen-wrapper");
+
+    </script>
 	</body>
 </html>

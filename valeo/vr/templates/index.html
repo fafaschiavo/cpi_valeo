@@ -3,25 +3,225 @@
 	<!-- <script src="/build/vrview.min.js"></script> -->
 	<script src="{% static "vr/build/vrview.min.js" %}"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+	<script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
 	<!-- <script src="https://s3.amazonaws.com/testes-ideape/google+vr/build/vrview.min.js"></script> -->
 </head>
 
-<body>
-	<strong id="change">Hello World!</strong>
-	<!-- <img src="{% static "vr/carro.jpg" %}"> -->
-	<div id="vrview" style="min-height: 1000px;"></div>
+<style type="text/css">
+	.steering-wheel{
+	    width: 40%;
+	    position: absolute;
+	    left: 30%;
+	    top: 65%;
+	    z-index: 100;
+	}
+	.indicator-front{
+		z-index: 50;
+	    width: 3.7%;
+	    position: absolute;
+	    right: 48.5%;
+	    top: 76%;
+	    /*top from -120 to 60 (max)*/
+
+/*		z-index: 100;
+		width: 6%;
+	    position: absolute;
+	    right: 8%;
+	    top: 70%;*/
+	    /*top from 95 to 52 (max)*/
+	}
+	.indicator-back{
+		z-index: 100;
+		width: 8%;
+	    position: absolute;
+	    right: 4%;
+	    top: 56%;
+	}
+	.indicator-goal{
+		display: none;
+		z-index: 25	;
+	    width: 3.7%;
+	    position: absolute;
+	    right: 48.5%;
+	    top: 76%;
+	    /*top from -120 to 60 (max)*/
+	}
+	.play-buttom{
+		width: 100px;
+		height: 100px;
+		background-color: #8dc63f;
+		border-radius: 100px;
+		text-align: center;
+	    border: 5px solid;
+	    position: absolute;
+	    top: 5%;
+	    right: 2%;
+	}
+	.reset-buttom{
+		width: 60px;
+		height: 60px;
+		background-color: #8dc63f;
+		border-radius: 100px;
+		text-align: center;
+	    border: 5px solid;
+	    position: absolute;
+	    top: 2%;
+	    left: 2%;
+	}
+	.play-text{
+		position: relative;
+    	top: 40px;
+	    font-size: 30px;
+	}
+	.reset-text{
+	    position: relative;
+	    top: 21px;
+	    font-size: 18px;
+	}
+	.front-pannel{
+		position: absolute;
+		bottom: -80%;
+		z-index: 1;
+	}
+	.indicator-goal-angle{
+		display: none;
+	    z-index: 125;
+	    width: 3.7%;
+	    position: absolute;
+	    right: 48%;
+	    top: 95%;
+	    /*top from -120 to 60 (max)*/
+	}
+	.switch-assited{
+	    position: absolute;
+	    top: 165px;
+	    left: 93.2%;
+	}
+	.mdl-switch__track{
+		background: rgba(255, 255, 255, 0.65);
+	}
+	.mdl-switch.is-checked .mdl-switch__thumb{
+		background: rgb(141, 198, 63);
+	}
+	.mdl-switch.is-checked .mdl-switch__track{
+		background: rgba(141, 198, 63, .5);
+	}
+	.result-container{
+		opacity: 0;
+		position: absolute;
+	    top: 16%;
+		left: 40.7%;
+		color: #000;
+		background-color:  rgba(141, 198, 63, .9);
+		padding: 20px;
+	    text-align: center;
+	    font-size: 16px;
+	    line-height: 25px;
+    	border-radius: 15px;
+	}
+	.positive-container{
+		opacity: 0;
+		position: absolute;
+		top: 43%;
+    	left: 37.3%;
+		color: #000;
+		background-color:  rgba(141, 198, 63, .9);
+		padding: 20px;
+	    text-align: center;
+	    font-size: 16px;
+	    line-height: 25px;
+    	border-radius: 15px;
+	}
+	.countdown-container{
+		opacity: 0;
+		position: absolute;
+	    top: 28%;
+	    left: 42%;
+		color: #8dc63f;
+		background-color:  rgba(0, 0, 0, 0);
+		padding: 20px;
+	    text-align: center;
+	    font-size: 30px;
+	    line-height: 25px;
+    	border-radius: 15px;
+	}
+	.timestamp{
+	    color: rgba(141, 198, 63, 1);
+	    position: absolute;
+	    top: 10%;
+	    left: 8%;
+	}
+</style>
+
+<body style="overflow-x: hidden;">
+<!-- 	<div style="text-align: center; margin: 2%;">
+		<strong id="change">Welcome to Valeo's Transition Simulator!</strong>
+	</div> -->
+
+	<!-- <div id="vrview" style="min-height: 600px;"></div> -->
+
+	<div class="2d-video-container">
+		<video width="100%" height="800px" controls id="simulator_video">
+		  <source src="{% static 'vr/simulator_test_4.mp4' %}" type="video/mp4">
+		Your browser does not support the video tag.
+		</video>
+
+		<img class="steering-wheel" id="wheel" src="{% static 'vr/wheel_v1.svg' %}">
+
+		<!-- <img class="indicator-back" id="indicator-back" src="{% static 'vr/indicator_back.svg' %}"> -->
+		<img class="indicator-front" id="indicator-front" src="{% static 'vr/indicator_front_v2.svg' %}">
+		<img class="indicator-goal" id="indicator-goal" src="{% static 'vr/indicator_goal_v3.svg' %}">
+		<img class="indicator-goal-angle" id="indicator-goal-angle" src="{% static 'vr/indicator_angle_goal_v1.svg' %}">
+		<img class="front-pannel" id="front-pannel" src="{% static 'vr/front_pannel.svg' %}">
+
+		<div class="play-buttom" id="play-buttom"><span class="play-text">Play!</span></div>
+		<div class="reset-buttom" id="reset-buttom"><span class="reset-text">Reset</span></div>
+		<label class="mdl-switch mdl-js-switch mdl-js-ripple-effect switch-assited" for="switch-1" id="switch-container">
+		  <input type="checkbox" id="switch-1" class="mdl-switch__input" checked>
+		  <span class="mdl-switch__label"></span>
+		</label>
+
+		<div id="result-container" class="result-container">
+			<div><strong>Your results are:</strong></div>
+			<div>Steering Wheel Precision: <strong id="wheel-precision">20</strong>%</div>
+			<div>Accelerator Precision: <strong id="speed-precision">36</strong>%</div>
+			<hr style="border-top: 1px solid #000;">
+			<div style="font-size: 20px;">OVERALL PRECISION: <strong id="overall-precision">36</strong>%</div>
+		</div>
+
+		<div id="positive-container" class="positive-container">
+			<hr style="border-top: 1px solid #000;">
+			<div style="font-size: 20px;" id="text-success-failure">Congratulations! You are ready to take controll!</div>
+			<hr style="border-top: 1px solid #000;">
+		</div>
+
+	</div>
+
 </body>
 
 <script type="text/javascript">
-	var vrView;
-	window.addEventListener('load', onVrViewLoad)
-	function onVrViewLoad() {
-	  vrView = new VRView.Player('#vrview', {
-	    // video: '{% static "vr/congo_2048.mp4" %}',
-	    video: '{% static "vr/trail.mp4" %}',
-	    is_stereo: true
-	  });
-	}
+var global_speed_goal = 0;
+var global_angle_goal = 90;
+var total_point_amount = 0;
+var total_player_amount = 0;
+var total_angle_amount = 0;
+var total_speed_amount = 0;
+var overall_precision = 0;
+
+// var vrView;
+// window.addEventListener('load', onVrViewLoad)
+// function onVrViewLoad() {
+//   vrView = new VRView.Player('#vrview', {
+//     video: '{% static "vr/congo_2048.mp4" %}',
+//     width: '100%',
+//     height: '600',
+//     // video: '{% static "vr/trail.mp4" %}',
+//     is_stereo: true
+//   });
+//   console.log(vrView);
+// }
 
 $( "#change" ).click(function() {
 	vrView.setContent({
@@ -30,6 +230,294 @@ $( "#change" ).click(function() {
 	});
 });
 
+$('#reset-buttom').click(function() {
+	video = document.getElementById('simulator_video');
+	video.currentTime = 0;
+	video.pause();
+	video.load();
 
+	global_speed_goal = 0;
+	global_angle_goal = 90;
+	total_point_amount = 0;
+	total_player_amount = 0;
+	total_angle_amount = 0;
+	total_speed_amount = 0;
+
+	$( "#play-buttom" ).animate({
+		opacity: 1
+	}, 200, function() {
+		// Animation complete.
+	});
+	$( "#switch-container" ).animate({
+		opacity: 1
+	}, 200, function() {
+		// Animation complete.
+	});
+	$( "#result-container" ).animate({
+		opacity: 0
+	}, 500, function() {
+		// Animation complete.
+	});
+});
+
+$('#play-buttom').click(function() {
+	$('#simulator_video')[0].play();
+
+	$( "#play-buttom" ).animate({
+		opacity: 0
+	}, 200, function() {
+		// Animation complete.
+	});
+	$( "#switch-container" ).animate({
+		opacity: 0
+	}, 200, function() {
+		// Animation complete.
+	});
+});
+
+document.getElementById('simulator_video').addEventListener('ended',function(){
+	
+	$( "#result-container" ).animate({
+		opacity: 1
+	}, 500, function() {
+		// Animation complete.
+	});
+
+	if (overall_precision >= 40) {
+		$('#text-success-failure').text('Congratulations! You are ready to take control!');
+	}else{
+		$('#text-success-failure').text('Sorry! You are not prepared to take control!');
+	}
+
+	$( "#positive-container" ).animate({
+		opacity: 1
+	}, 500, function() {
+		// Animation complete.
+	});
+
+}, false);
+
+function sum_points(global_speed_goal, accelerator_position, global_angle_goal, wheel_position){
+	var video_element = document.getElementById("simulator_video");
+	var angle_difference;
+	var acc_difference;
+	var wheel_precision;
+	var speed_precision;
+	if (!video_element.paused) {
+		total_point_amount = total_point_amount+14;
+
+		angle_difference = global_angle_goal - wheel_position;
+		angle_difference = 7 - Math.abs(angle_difference/2);
+		if (angle_difference>0) {
+			total_angle_amount = total_angle_amount + angle_difference;
+		}
+
+		acc_difference = global_speed_goal - accelerator_position;
+		acc_difference = 7 - Math.abs(acc_difference/2);
+		if (acc_difference>0) {
+			total_speed_amount = total_speed_amount + acc_difference;
+		}
+		
+	}
+	overall_precision = (total_angle_amount+total_speed_amount)/total_point_amount;
+	overall_precision = overall_precision*100;
+	$('#overall-precision').text(overall_precision.toFixed(2));
+
+	wheel_precision = total_angle_amount/(total_point_amount/2);
+	wheel_precision = wheel_precision*100;
+	$('#wheel-precision').text(wheel_precision.toFixed(2));
+
+	speed_precision = total_speed_amount/(total_point_amount/2);
+	speed_precision = speed_precision*100;
+	$('#speed-precision').text(speed_precision.toFixed(2));
+}
+
+function map_accelerator_in_position(min_position, max_position, accelerator_range, accelerator_current_value){
+	position = (max_position - min_position);
+	position = position/accelerator_range;
+	position = position*accelerator_current_value;
+	position = position + min_position;
+	return position;
+}
+
+function check_joystick() {
+	  $.ajax({
+	  url: 'http://127.0.0.1:8000/vr/async-joystick/',
+	  type: 'get',
+	  success: function(data) {
+	  	  angle_correction = 4;
+	  	  min_position = -120;
+	  	  max_position = 60;
+	  	  accelerator_range = 100;
+	  	  data_array = data.split('&')
+	  	  data = data_array[0]
+	      data = parseInt(data);
+	      data = data + angle_correction;
+	      data = data.toString();
+	      $("#wheel").css('transform', 'rotate(' + data + 'deg)');
+	      accelerator_position = map_accelerator_in_position(min_position, max_position, accelerator_range, parseInt(data_array[1]));
+	      $('#indicator-front').css('transform', 'rotate(' + accelerator_position + 'deg)');
+
+	      current_time = $('#simulator_video')[0].currentTime;
+	      // console.log('Current time - ' + current_time);
+
+	      var wheel_position = data-90;
+	      wheel_position = wheel_position-4;
+
+	      //Erase this shit later
+	      $('#angle-temp').text(wheel_position);
+	      $('#acc-temp').text(parseInt(data_array[1]).toFixed(0));
+
+	      sum_points(global_speed_goal, accelerator_position, global_angle_goal, wheel_position);
+	  },
+	  failure: function(data) {
+	      console.log('Got an error dude');
+	  }
+	});
+}
+
+function update_goal_position(goal_position, time_stamp, transition_time) {
+	min_position = -120;
+	max_position = 60;
+	accelerator_range = 100;
+	goal_position = map_accelerator_in_position(min_position, max_position, accelerator_range, goal_position);
+	setTimeout(function(){
+		AnimateRotate(goal_position, transition_time, '#indicator-goal');
+	}, time_stamp);
+
+}
+
+function update_angle_goal_position(goal_position, time_stamp, transition_time) {
+	min_position = -90;
+	max_position = 90;
+	accelerator_range = 180;
+	goal_position = map_accelerator_in_position(min_position, max_position, accelerator_range, goal_position);
+	setTimeout(function(){
+		AnimateRotateAngle(goal_position, transition_time, '#indicator-goal-angle');
+	}, time_stamp);
+
+}
+
+$('#switch-1').change(function() {
+        if($(this).is(":checked")) {
+			$('#indicator-goal').css('display', 'none');
+			$('#indicator-goal-angle').css('display', 'none');
+        }else{
+			$('#indicator-goal').css('display', 'inline');
+			$('#indicator-goal-angle').css('display', 'inline');
+        }
+    });
+
+$('#simulator_video').on("play", function() {
+
+	//   goal_position, time_stamp, transition_time
+
+	update_goal_position(0, 0, 600);
+	update_goal_position(40, 1000, 2000);
+	update_goal_position(26, 5000, 6000);
+	update_goal_position(10, 11000, 2000);
+	update_goal_position(5, 13000, 2000);
+	update_goal_position(20, 19000, 3000);
+	update_goal_position(10, 24000, 2000);
+	update_goal_position(5, 28000, 2000);
+	update_goal_position(10, 31000, 2000);
+	update_goal_position(15, 33000, 1000);
+	update_goal_position(25, 34000, 2500);
+	update_goal_position(40, 37000, 2000);
+	update_goal_position(50, 39000, 4000);
+	update_goal_position(65, 43000, 5000);
+	update_goal_position(76, 48000, 3000);
+	update_goal_position(80, 53000, 2000);
+	update_goal_position(60, 55000, 3000);
+	update_goal_position(52, 59000, 1000);
+	update_goal_position(30, 60000, 2000);
+
+	update_angle_goal_position(90, 0, 600);
+	update_angle_goal_position(88, 5000, 2000);
+	update_angle_goal_position(90, 7000, 1000);
+	update_angle_goal_position(150, 12000, 4000);
+	update_angle_goal_position(90, 16500, 3000);
+	update_angle_goal_position(93, 22500, 500);
+	update_angle_goal_position(90, 23000, 500);
+	update_angle_goal_position(30, 30000, 4000);
+	update_angle_goal_position(90, 34000, 3200);
+	update_angle_goal_position(80, 39000, 3000);
+	update_angle_goal_position(75, 42000, 800);
+	update_angle_goal_position(90, 43000, 1500);
+	update_angle_goal_position(117, 47000, 1500);
+	update_angle_goal_position(87, 48500, 1700);
+	update_angle_goal_position(75, 51000, 2000);
+	update_angle_goal_position(90, 54000, 1000);
+	update_angle_goal_position(97, 58000, 1500);
+	update_angle_goal_position(90, 59500, 1000);
+
+
+	// update_goal_position(0, 0, 300);
+	// update_goal_position(30, 1000, 2000);
+	// update_goal_position(40, 3000, 3000);
+	// update_goal_position(30, 6100, 10000);
+	// update_goal_position(27, 20000, 4000);
+	// update_goal_position(40, 24000, 13000);
+	// update_goal_position(80, 37000, 9000);
+
+	// update_angle_goal_position(90, 0, 300);
+	// update_angle_goal_position(93, 1000, 2000);
+	// update_angle_goal_position(97, 11000, 1000);
+	// update_angle_goal_position(86, 14000, 1000);
+	// update_angle_goal_position(90, 15000, 600);
+	// update_angle_goal_position(93, 15600, 2000);
+	// update_angle_goal_position(120, 20000, 3000);
+	// update_angle_goal_position(135, 23000, 4000);
+	// update_angle_goal_position(90, 39000, 2000);
+
+});
+
+ // Time in milliseconds
+setInterval(check_joystick, 100);
+
+function AnimateRotate(angle, transition_time, element_to_rotate) {
+    // caching the object for performance reasons
+    var $elem = $(element_to_rotate);
+    // we use a pseudo object for the animation
+    // (starts from `0` to `angle`), you can name it as you want
+    $({deg: global_speed_goal}).animate({deg: angle}, {
+        duration: transition_time,
+        step: function(now) {
+            // in the step-callback (that is fired each step of the animation),
+            // you can use the `now` paramter which contains the current
+            // animation-position (`0` up to `angle`)
+            $elem.css({
+                transform: 'rotate(' + now + 'deg)'
+            });
+            global_speed_goal = now;
+        }
+    });
+}
+
+function AnimateRotateAngle(angle, transition_time, element_to_rotate) {
+    // caching the object for performance reasons
+    var $elem = $(element_to_rotate);
+    // we use a pseudo object for the animation
+    // (starts from `0` to `angle`), you can name it as you want
+    $({deg: global_angle_goal}).animate({deg: angle}, {
+        duration: transition_time,
+        step: function(now) {
+            // in the step-callback (that is fired each step of the animation),
+            // you can use the `now` paramter which contains the current
+            // animation-position (`0` up to `angle`)
+            $elem.css({
+                transform: 'rotate(' + now + 'deg)'
+            });
+            global_angle_goal = now;
+        }
+    });
+}
+
+// var vid = document.getElementById("simulator_video");
+// vid.ontimeupdate = function() {myFunction()};
+
+// function myFunction() {
+//     document.getElementById("timestamp").innerHTML = vid.currentTime.toFixed(1);
+// }
 </script>
 
